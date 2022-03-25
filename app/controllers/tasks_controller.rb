@@ -24,6 +24,15 @@ class TasksController < ApplicationController
     unless project_id.nil?
       @task.project ||= Project.find(project_id)
     end
+    assigner_name = params[:assigner_name]
+    unless assigner_name.nil?
+      assigner = User.find_by(name: assigner_name)
+      unless assigner.nil?
+        @task.assigner_id = assigner.id
+      end
+    end
+    @task.content = params[:content]
+    @task.description = params[:description]
   end
 
   # GET /tasks/1/edit
@@ -41,6 +50,7 @@ class TasksController < ApplicationController
 
     if @task.save!
       flash[:success] = "タスクを追加しました"
+      create_scrapbox_page
       redirect_to tasks_path
     else
       redirect_back fallback_location: new_task_path
@@ -85,4 +95,48 @@ class TasksController < ApplicationController
       tag ? tag : Tag.create(name: tag_name)
     end
   end
+
+  # Replace action-item number into corresponding GitHub issue number.
+  # Example:
+  #   "-->(name !:0001)" becomes "-->(name nomlab/jay/#10)"
+  def cooked_content
+    self.read_attribute(:content).split("\n").map do |line|
+      line.gsub(/-->\((.+?)!:([0-9]{4})\)/) do |macth|
+        assignee, action = $1.strip, $2
+
+        issue = SerialNumber.find_by_id(action.to_i).try(:github_issue)
+
+        issue ? "-->(#{assignee} #{issue}{:data-action-item=\"#{action}\"})" :
+          "-->(#{assignee} !:#{action})"
+      end
+    end.join("\n")
+  end
+
+  # Add action-item number with prefix "!:".
+  # Example:
+  #   "-->(name)" becomes "-->(name !:0001)"
+  def add_unique_action_item_marker
+    self.content = self.content.split("\n").map do |line|
+      line.gsub(/-->\((.+?)(?:!:([0-9]{4}))?\)/) do |macth|
+        assignee, action = $1.strip, $2
+
+        action = SerialNumber.create.uid unless action
+        "-->(#{assignee} !:#{action})"
+      end
+    end.join("\n")
+  end
+
+  def create_scrapbox_page
+    base_url = "https://scrapbox.io/nompedia/"
+    serial_number = "AI#{sprintf("%04d", @task.id.to_i)} "
+    title = @task.content
+    # body = "?body=\#" + @task.assigner.name + "\n"
+    scrapbox_url = base_url + serial_number + title + body
+
+    @task["scrapbox_page"] = scrapbox_url
+    @task.save!
+    
+    # redirect_to scrapbox_url, target: :_black, rel: "noopener noreferrer"
+  end
+
 end

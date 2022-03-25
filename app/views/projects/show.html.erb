@@ -9,7 +9,7 @@
   <div class="flex">
     <p class="text-xl block font-bold mb-2">タスク一覧</p>
     <div class="flex-1"></div>
-    <%= link_to '新規作成', new_task_path(project_id: @project.id), class: "my-auto text-white bg-red-400 rounded p-2" %>
+    <%= link_to '新規作成', new_task_path(description: "test"), class: "my-auto text-white bg-red-400 rounded p-2" %>
   </div>
   <% @project.tasks.each do |task| %>
     <div class="p-3 my-3 border rounded flex space-x-4">

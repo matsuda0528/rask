@@ -7,6 +7,7 @@ class CreateTasks < ActiveRecord::Migration[6.1]
       t.integer :assigner_id
       t.text :description
       t.references :project, foreign_key: true, on_delete: :cascade
+      t.references :serial_number
       t.timestamps
     end
 

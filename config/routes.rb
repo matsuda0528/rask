@@ -6,7 +6,8 @@ Rails.application.routes.draw do
   resources :users
   resources :documents
   post '/documents/api_markdown', to: 'documents#api_markdown'
-  
+  post '/guest_sign_in' , to: 'sessions#guest_sign_in'
+
   get '/', to: redirect('/projects')
 
   get '/auth/:provider/callback', to: 'sessions#create'

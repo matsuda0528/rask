@@ -20,4 +20,13 @@ class SessionsController < ApplicationController
     redirect_to projects_url
   end
 
+  def guest_sign_in
+    user = User.create! do |u|
+      u.name = 'Guest'
+    end
+
+    log_in user
+    redirect_to '/', notice: 'Logged in as Guest User'
+  end
+
 end

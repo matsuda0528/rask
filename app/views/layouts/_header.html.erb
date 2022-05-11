@@ -6,6 +6,7 @@
       <li><%= link_to "ログアウト", logout_path, method: :delete, data: { confirm: 'ログアウトしますか？' } %></li>
     <% else %>
       <li><%= link_to "ログイン", '/auth/github', method: :post %></li>
+      <li><%= link_to "ゲストログイン", '/guest_sign_in', method: :post %></li>
     <% end %>
   </ul>
 </header>

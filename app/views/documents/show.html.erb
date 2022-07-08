@@ -10,6 +10,8 @@
   <p class="text-xl">所属プロジェクト:
     <%= link_to_if  @document.project&.name, @document.project&.name, @document.project %>
   <p class="text-xl block font-bold mb-2">文書内容</p>
-    <%== JayFlavoredMarkdownConverter.new(@document.description).content %>
+    <div class="jay_document">
+      <%== JayFlavoredMarkdownConverter.new(@document.description).content %>
+    </div>
   </p>
 </div>

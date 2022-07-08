@@ -7,6 +7,7 @@
 <% @tasks.each do |task| %>
   <div class="p-3 my-3 border rounded flex space-x-4">
     <div>
+
       <p class="text-xl"><%= task.content %></p>
       <p>担当者: <%= link_to task.assigner.name, task.assigner %></p>
       <% if task.project %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_07_082503) do
+ActiveRecord::Schema.define(version: 2022_02_25_052618) do
 
   create_table "api_tokens", force: :cascade do |t|
     t.string "secret"
@@ -43,6 +43,13 @@ ActiveRecord::Schema.define(version: 2021_11_07_082503) do
     t.index ["user_id"], name: "index_projects_on_user_id"
   end
 
+  create_table "serial_numbers", force: :cascade do |t|
+    t.integer "task_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["task_id"], name: "index_serial_numbers_on_task_id"
+  end
+
   create_table "tags", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
@@ -56,15 +63,6 @@ ActiveRecord::Schema.define(version: 2021_11_07_082503) do
     t.string "color"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-  end
-
-  create_table "task_tag_relations", force: :cascade do |t|
-    t.integer "task_id", null: false
-    t.integer "tag_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["tag_id"], name: "index_task_tag_relations_on_tag_id"
-    t.index ["task_id"], name: "index_task_tag_relations_on_task_id"
   end
 
   create_table "task_tags", force: :cascade do |t|
@@ -83,23 +81,16 @@ ActiveRecord::Schema.define(version: 2021_11_07_082503) do
     t.integer "assigner_id"
     t.text "description"
     t.integer "project_id"
+    t.integer "serial_number_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "tag_id"
-    t.index ["project_id"], name: "index_tasks_on_project_id"
-    t.index ["tag_id"], name: "index_tasks_on_tag_id"
     t.integer "task_state_id"
+    t.string "scrapbox_page"
     t.index ["project_id"], name: "index_tasks_on_project_id"
+    t.index ["serial_number_id"], name: "index_tasks_on_serial_number_id"
+    t.index ["tag_id"], name: "index_tasks_on_tag_id"
     t.index ["task_state_id"], name: "index_tasks_on_task_state_id"
-  end
-
-  create_table "tasks_tags", force: :cascade do |t|
-    t.integer "task_id", null: false
-    t.integer "tag_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["tag_id"], name: "index_tasks_tags_on_tag_id"
-    t.index ["task_id"], name: "index_tasks_tags_on_task_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -121,14 +112,11 @@ ActiveRecord::Schema.define(version: 2021_11_07_082503) do
   add_foreign_key "documents", "users", column: "creator_id", on_delete: :cascade
   add_foreign_key "projects", "users"
   add_foreign_key "projects", "users", on_delete: :cascade
-  add_foreign_key "task_tag_relations", "tags"
-  add_foreign_key "task_tag_relations", "tasks"
+  add_foreign_key "serial_numbers", "tasks"
   add_foreign_key "tasks", "projects"
   add_foreign_key "tasks", "projects", on_delete: :cascade
   add_foreign_key "tasks", "tags"
   add_foreign_key "tasks", "task_states"
   add_foreign_key "tasks", "users", column: "assigner_id", on_delete: :cascade
   add_foreign_key "tasks", "users", column: "creator_id", on_delete: :cascade
-  add_foreign_key "tasks_tags", "tags"
-  add_foreign_key "tasks_tags", "tasks"
 end

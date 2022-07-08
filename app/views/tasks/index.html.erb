@@ -7,23 +7,19 @@
 <% @tasks.each do |task| %>
   <div class="p-3 my-3 border rounded flex space-x-4">
     <div>
-      <p class="text-xl">
-        <% if task.state.name=="todo" %>
-          <i class="far fa-dot-circle"></i>
-        <% end %>
-        <% if task.state.name=="done" %>
-          <i class="far fa-check-circle"></i>
-        <% end %>
-        <%= link_to task.content, task %>
-      </p>
-      <p></p>
-      <p>
-        <% if task.project %>
-          <%= link_to task.project.name, task.project %>
-        <% end %>
-        <%= link_to task.assigner.name, task.assigner %>
-        <%= task.show_days_ago %>
-      </p>
+
+      <p class="text-xl"><%= task.content %></p>
+      <p>担当者: <%= link_to task.assigner.name, task.assigner %></p>
+      <% if task.project %>
+      <p>所属プロジェクト: <%= link_to task.project.name, task.project %></p>
+      <% end %>
+      <% if task.tags %>
+      <p>タグ: <% task.tags.each do |tag| %>
+	<%= link_to tag.name, tag %>
+	<% end %></p>
+      <% end %>
+      <p><%= task.show_days_ago %></p>
+      <P>状態: <%= task.state&.name %></P>
     </div>
     <div class="flex-1"></div>
     <% if logged_in? %>
